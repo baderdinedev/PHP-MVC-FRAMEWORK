@@ -1,0 +1,15 @@
+{
+    "name": "bado/phpmvcframework",
+    "autoload": {
+        "psr-4": {
+            "app\\": "./"
+        }
+    },
+    "authors": [
+        {
+            "name": "baderdinedev",
+            "email": "baderdinedev@gmail.com"
+        }
+    ],
+    "require": {}
+}

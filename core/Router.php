@@ -13,42 +13,55 @@ namespace app\core;
 class Router
 {
 
-    public Request $request;
-    protected array $routes = [];
+  public Request $request;
+  protected array $routes = [];
 
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+  public function __construct(Request $request)
+  {
+    $this->request = $request;
+  }
+
+  public function get($path, $callback)
+  {
+    $this->routes['GET'][$path] = $callback;
+  }
+
+  public function resolve()
+  {
+    $path = $this->request->getPath();
+    $method = strtoupper($this->request->getMethod());
+
+    $callback = $this->routes[$method][$path] ?? false;
+
+    if ($callback === false) {
+      return "Not found";
     }
 
-    public function get($path, $callback)
-    {
-        $this->routes['GET'][$path] = $callback;
+    if (is_string($callback)) {
+      return $this->renderView($callback);
     }
 
-    public function resolve()
-    {
-        $path = $this->request->getPath();
-        $method = strtoupper($this->request->getMethod());
+    return call_user_func($callback);
+  }
 
-        $callback = $this->routes[$method][$path] ?? false;
+  private function renderView(string $view)
+  {
+    $layoutContent = $this->layoutContent();
+    $viewContent = $this->renderOnlyView($view);
+    return str_replace('{{content}}', $viewContent, $layoutContent);
+  }
 
-        if ($callback === false) {
-            return "Not found";
-        }
+  protected function layoutContent()
+  {
+    ob_start();
+    include_once Application::$ROOT_DIR . "/views/layouts/main.php"; // Correct path
+    return ob_get_clean();
+  }
 
-        if(is_string($callback)) {
-            return $this->renderView($callback);
-        }
-
-        return call_user_func($callback);
-    }
-
-    private function renderView(string $view)
-    {
-        include_once __DIR__ . "/../views/$view.php";
-    }
-
-
-
+  protected function renderOnlyView($view)
+  {
+    ob_start();
+    include_once Application::$ROOT_DIR . "/views/$view.php"; // Correct path
+    return ob_get_clean();
+  }
 }

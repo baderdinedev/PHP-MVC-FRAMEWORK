@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User: bado
  * Date: 3/9/25
@@ -9,9 +10,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$app = new \app\core\Application();
+$rootPath = dirname(__DIR__);
+
+$app = new \app\core\Application($rootPath);
 
 $app->router->get('/', 'home');
-
+$app->router->get('/contact', 'contact');
 
 $app->run();
